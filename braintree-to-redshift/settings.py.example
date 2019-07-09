@@ -1,0 +1,46 @@
+#!/usr/bin/python
+
+# See README.md for instructions on how to fill in these settings.
+
+files_dir = './' # '/Users/[username]/Desktop' puts CSVs on OSX desktop.
+test = False # adds _test to tablename and CSV name
+
+transactions = {}
+transactions['import_type'] = 'transactions'
+transactions['filename'] = 'braintree_import.csv'
+transactions['tablename'] = 'ventures.transactions_test'
+transactions['columns'] = [
+  'amount',
+  'created_at',
+  'order_id',
+  'payment_method',
+  'recur_checkbox',
+  'status',
+  'subscription_id',
+  'transation_id',
+  'updated_at'
+]
+transactions['primary_key'] = 'transaction_id'
+disputes = {}
+#tk
+# Include only dictionaries for desired data.
+data_types = [transactions] #tk disputes
+
+# AWS settings
+aws_access_key = ''
+aws_secret_key = ''
+s3_bucket = ''
+s3_bucket_dir = ''
+
+# Redshift db settings
+db_user = ''
+db_host = ''
+db_pwd = ''
+db_name = ''
+
+#braintree settings
+
+braintree_merchant_id = ""
+braintree_public_key = ""
+braintree_private_key = ""
+braintree_env= ""
