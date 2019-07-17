@@ -78,20 +78,24 @@ def make_transactions_dictionary(start_date = date(2019, 6, 25), days = 3):
 # def make_transactions_dictionary(start_date = date.today(), days = 1):
     transactions = get_transactions(start_date, days)
     transaction_dict = {}
-
     for transaction in transactions.items:
+        formatted_amount = json.dumps(transaction.amount, default=decimal_default)
+        formatted_created_at = json.dumps(transaction.created_at, default=datetime_default).replace("\"", "")
+        formatted_recurring = "TRUE" if transaction.recurring else "FALSE"
+        formatted_updated_at = json.dumps(transaction.updated_at, default=datetime_default).replace("\"", "")
+        formatted_order_id = transaction.order_id if transaction.order_id else ''
+        formatted_subscription_id = transaction.subscription_id if transaction.subscription_id else ''
         transaction_dict[transaction.id] = [
-            json.dumps(transaction.amount, default=decimal_default),
-            json.dumps(transaction.created_at, default=datetime_default),
-            transaction.order_id,
+            formatted_amount,
+            formatted_created_at,
+            formatted_order_id,
             transaction.payment_instrument_type,
-            transaction.recurring,
+            formatted_recurring,
             transaction.status,
-            transaction.subscription_id,
             transaction.id,
-            json.dumps(transaction.updated_at, default=datetime_default)
+            formatted_updated_at
         ]
     return transaction_dict
-    
+
 def get_disputes():
     print('disputes')

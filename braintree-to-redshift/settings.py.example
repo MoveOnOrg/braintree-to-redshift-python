@@ -17,7 +17,7 @@ transactions['columns'] = [
   'recur_checkbox',
   'status',
   'subscription_id',
-  'transation_id',
+  'transaction_id',
   'updated_at'
 ]
 transactions['primary_key'] = 'transaction_id'

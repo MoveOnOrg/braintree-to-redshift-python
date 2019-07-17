@@ -6,6 +6,7 @@
 import sys
 import os
 import boto
+from boto.s3.connection import Location
 local_settings_path = os.path.join(os.getcwd(),"settings.py")
 if os.path.exists(local_settings_path):
     import imp
@@ -16,7 +17,7 @@ from redshift import RedShiftMediator
 from braintree_connection import (
     make_transactions_dictionary, get_disputes)
 from settings import (
-    aws_access_key, aws_secret_key, s3_bucket, s3_bucket_dir, files_dir,
+    aws_access_key, aws_secret_key, s3_bucket, s3_bucket_dir, s3_region, files_dir,
     test)
 import settings
 import csv
@@ -33,12 +34,12 @@ def create_transactions_import_file(
     print('data dict created')
     print(data_dict)
     if not data_dict:
-        print("Could not retrieve trnasaction data")
+        print("Could not retrieve transaction data")
         return False
     csv_file = csv.writer(import_file)
     csv_file.writerow(columns)
-    csv_file.writerows(data_dict.items())
-        # csv_file.writerows([[id,]+values for id, values in data_dict.items])
+    for key, value in data_dict.items():
+        csv_file.writerow(value)
     import_file.close()
     return True
 
@@ -60,37 +61,37 @@ def update_redshift(table_name, columns, primary_key, filename):
     staging_table_key = "s." + primary_key
 
     command = """-- Create a staging table
-CREATE TABLE %s (LIKE %s);
+    CREATE TABLE %s (LIKE %s);
 
--- Load data into the staging table
-COPY %s (%s)
-FROM 's3://%s/%s/%s'
-CREDENTIALS 'aws_access_key_id=%s;aws_secret_access_key=%s'
-FILLRECORD
-delimiter ','
-IGNOREHEADER 1;
+    -- Load data into the staging table
+    COPY %s (%s)
+    FROM 's3://%s/%s/%s'
+    CREDENTIALS 'aws_access_key_id=%s;aws_secret_access_key=%s'
+    FILLRECORD
+    delimiter ','
+    IGNOREHEADER 1;
 
--- Update records
-UPDATE %s
-SET %s
-FROM %s s
-WHERE %s = %s;
+    -- Update records
+    UPDATE %s
+    SET %s
+    FROM %s s
+    WHERE %s = %s;
 
--- Insert records
-INSERT INTO %s
-SELECT s.* FROM %s s LEFT JOIN %s
-ON %s = %s
-WHERE %s IS NULL;
+    -- Insert records
+    INSERT INTO %s
+    SELECT s.* FROM %s s LEFT JOIN %s
+    ON %s = %s
+    WHERE %s IS NULL;
 
--- Drop the staging table
-DROP TABLE %s;
+    -- Drop the staging table
+    DROP TABLE %s;
 
--- End transaction
-END;"""%(
-    staging_table_name, table_name, staging_table_name, column_names,
-    s3_bucket, s3_bucket_dir, filename, aws_access_key, aws_secret_key,
-    table_name, columns_to_stage, staging_table_name, table_key,
-    staging_table_key, table_name, staging_table_name, table_name,
-    staging_table_key, table_key, table_key, staging_table_name)
+    -- End transaction
+    END;"""%(
+        staging_table_name, table_name, staging_table_name, column_names,
+        s3_bucket, s3_bucket_dir, filename, aws_access_key, aws_secret_key,
+        table_name, columns_to_stage, staging_table_name, table_key,
+        staging_table_key, table_name, staging_table_name, table_name,
+        staging_table_key, table_key, table_key, staging_table_name)
 
     rsm.db_query(command)

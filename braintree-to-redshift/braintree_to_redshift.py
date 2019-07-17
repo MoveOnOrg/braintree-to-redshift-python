@@ -13,7 +13,6 @@ if os.path.exists(local_settings_path):
     settings = imp.load_source('settings', local_settings_path)
 
 from braintree_tools import create_transactions_import_file, upload_to_s3, update_redshift
-# from fb import get_video_list_ids_by_name
 from time import gmtime, strftime
 from settings import (
     test, files_dir, s3_bucket, s3_bucket_dir, transactions)
@@ -22,23 +21,17 @@ def main():
     print()
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
     print('Importing transactions')
-    if test:
-        transactions['tablename'] += '_test'
-        transactions['filename'] = ('_test.').join(transactions['filename'].split('.'))
-    else:
-        print('creating file')
-        created_file = create_transactions_import_file(
-            filename=transactions['filename'],
-            columns=transactions['columns']
-        )
+    print('creating file')
+    created_file = create_transactions_import_file(
+        filename=transactions['filename'],
+        columns=transactions['columns']
+    )
     print("created %s " %(files_dir + transactions['filename']))
     upload_to_s3(transactions['filename'])
     print(
         "uploaded %s to s3 bucket s3://%s/%s"
         %(files_dir + transactions['filename'], s3_bucket_dir, s3_bucket))
-    update_redshift(
-        transactions['tablename'], transactions['columns'],
-        transactions['primary_key'], transactions['filename'])
+    update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
     print("updated redshift table " + transactions['tablename'])
     print("Done!")
 
