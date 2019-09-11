@@ -32,11 +32,11 @@ def create_transaction(amount, nonce):
        'payment_method_nonce': nonce,
        'options': {'submit_for_settlement': True}})
     if result.is_success:
-        print 'success!: ' + result.transaction.id
+        print ('success!: ' + result.transaction.id)
     elif result.transaction:
-        print 'Error processing transaction:'
-        print '  code: ' + result.transaction.processor_response_code
-        print '  text: ' + result.transaction.processor_response_text
+        print ('Error processing transaction:')
+        print ('  code: ' + result.transaction.processor_response_code)
+        print ('  text: ' + result.transaction.processor_response_text)
     else:
         for error in result.errors.deep_errors:
             error_string = 'attribute: %s \tcode: %s \t message: %s' % (error.attribute, error.code, error.message)
@@ -76,4 +76,4 @@ def make_transactions_dictionary(start_date=date(2019, 6, 25), days=3):
 
 
 def get_disputes():
-    print 'disputes'
+    print ('disputes')
