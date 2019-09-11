@@ -8,29 +8,84 @@ test = False # adds _test to tablename and CSV name
 transactions = {}
 transactions['import_type'] = 'transactions'
 transactions['filename'] = 'braintree_import.csv'
-transactions['tablename'] = 'ventures.transactions_test'
-transactions['columns'] = [
-  'amount',
-  'created_at',
-  'order_id',
-  'payment_method',
-  'recur_checkbox',
-  'status',
-  'subscription_id',
-  'transaction_id',
-  'updated_at'
+transactions['tablename'] = 'ventures.transactions'
+transactions['columns'] = [ #these are columns from the redshift table. They do not perfectly map to braintree transaction objects.
+    'credit_card_bin',
+    'credit_card_card_type',
+    'credit_card_cardholder_name',
+    'credit_card_commercial',
+    'credit_card_country_of_issuance',
+    'credit_card_customer_location',
+    'credit_card_debit',
+    'credit_card_durbin_regulated',
+    'credit_card_expiration_month',
+    'credit_card_expiration_year',
+    'credit_card_healthcare',
+    'credit_card_image_url',
+    'credit_card_issuing_bank',
+    'credit_card_last_4',
+    'credit_card_payroll',
+    'credit_card_prepaid',
+    'credit_card_product_id',
+    'credit_card_token',
+    'credit_card_venmo_sdk',
+    'disbursement_date',
+    'disbursement_funds_held',
+    'disbursement_settlement_amount',
+    'disbursement_settlement_currency_exchange_rate',
+    'disbursement_settlement_currency_iso_code',
+    'disbursement_success',
+    'additional_processor_response',
+    'amount',
+    'avs_error_response_code',
+    'avs_postal_code_response_code',
+    'avs_street_address_response_code',
+    'channel',
+    'created_at',
+    'currency_iso_code',
+    'cvv_response_code',
+    'discount_amount',
+    'escrow_status',
+    'gateway_rejection_reason',
+    'id',
+    'master_merchant_account_id',
+    'merchant_account_id',
+    'order_id',
+    'payment_instrument_type',
+    'plan_id',
+    'processor_authorization_code',
+    'processor_response_code',
+    'processor_response_text',
+    'processor_settlement_response_code',
+    'processor_settlement_response_text',
+    'purchase_order_number',
+    'recurring',
+    'refund_id',
+    'refunded_transaction_id',
+    'service_fee_amount',
+    'settlement_batch_id',
+    'shipping_amount',
+    'ships_from_postal_code',
+    'status',
+    'sub_merchant_account_id',
+    'subscription_id',
+    'tax_amount',
+    'tax_exempt',
+    'type',
+    'updated_at',
+    'voice_referral_number',
 ]
-transactions['primary_key'] = 'transaction_id'
+transactions['primary_key'] = 'id'
 disputes = {}
-#tk
-# Include only dictionaries for desired data.
 data_types = [transactions] #tk disputes
 
 # AWS settings
 aws_access_key = ''
 aws_secret_key = ''
 s3_bucket = ''
+# s3_object_url = 'ephemeral-jobs-internal-west2.s3-us-west-2.amazonaws.com'
 s3_bucket_dir = ''
+s3_region = ''
 
 # Redshift db settings
 db_user = ''
@@ -39,7 +94,13 @@ db_pwd = ''
 db_name = ''
 
 #braintree settings
+#sandbox
+# braintree_merchant_id = ""
+# braintree_public_key = ""
+# braintree_private_key = ""
+# braintree_env= "sandbox"
 
+#production
 braintree_merchant_id = ""
 braintree_public_key = ""
 braintree_private_key = ""

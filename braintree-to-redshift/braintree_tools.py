@@ -32,11 +32,10 @@ def create_transactions_import_file(
     print('import file opened')
     data_dict = make_transactions_dictionary()
     print('data dict created')
-    print(data_dict)
     if not data_dict:
         print("Could not retrieve transaction data")
         return False
-    csv_file = csv.writer(import_file)
+    csv_file = csv.writer(import_file, delimiter="|")
     csv_file.writerow(columns)
     for key, value in data_dict.items():
         csv_file.writerow(value)
@@ -68,7 +67,7 @@ def update_redshift(table_name, columns, primary_key, filename):
     FROM 's3://%s/%s/%s'
     CREDENTIALS 'aws_access_key_id=%s;aws_secret_access_key=%s'
     FILLRECORD
-    delimiter ','
+    delimiter '|'
     IGNOREHEADER 1;
 
     -- Update records
