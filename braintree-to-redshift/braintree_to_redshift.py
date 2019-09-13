@@ -17,7 +17,7 @@ from time import gmtime, strftime
 from settings import (
     test, files_dir, s3_bucket, s3_bucket_dir, transactions)
 
-def main():
+def main(event='', context=''):
     print()
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
     print('Importing transactions')

@@ -4,25 +4,25 @@ import sys, os, re, braintree, decimal
 from datetime import date, datetime, timedelta
 from time import gmtime, strftime, time
 import json
-from settings import braintree_merchant_id, braintree_public_key, braintree_private_key, braintree_env
+from settings import braintree_merchant_id, braintree_public_key, braintree_private_key
 local_settings_path = os.path.join(os.getcwd(), 'settings.py')
 if os.path.exists(local_settings_path):
     import imp
     settings = imp.load_source('settings', local_settings_path)
 
-def decimal_default(obj):
-    if isinstance(obj, decimal.Decimal):
-        return float(obj)
-    raise TypeError
-
-
-def datetime_default(o):
-    if isinstance(o, datetime):
-        return o.__str__()
+# def decimal_default(obj):
+#     if isinstance(obj, decimal.Decimal):
+#         return float(obj)
+#     raise TypeError
+#
+#
+# def datetime_default(o):
+#     if isinstance(o, datetime):
+#         return o.__str__()
 
 
 def connect_to_braintree():
-    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Sandbox, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key))
+    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key))
     return gateway
 
 
@@ -61,17 +61,75 @@ def make_transactions_dictionary(start_date=date(2019, 6, 25), days=3):
     transactions = get_transactions(start_date, days)
     transaction_dict = {}
     for transaction in transactions.items:
+        credit_card = transaction.credit_card
+        disbursement = transaction.disbursement_details
+        print(disbursement)
         transaction_dict[transaction.id] = [
-         json.dumps(transaction.amount, default=decimal_default),
-         json.dumps(transaction.created_at, default=datetime_default),
-         transaction.order_id,
-         transaction.payment_instrument_type,
-         transaction.recurring,
-         transaction.status,
-         transaction.subscription_id,
-         transaction.id,
-         json.dumps(transaction.updated_at, default=datetime_default)]
-
+            credit_card['bin'],
+             credit_card['card_type'],
+             credit_card['cardholder_name'],
+             credit_card['commercial'],
+             credit_card['country_of_issuance'],
+             credit_card['customer_location'],
+             credit_card['debit'],
+             credit_card['durbin_regulated'],
+             credit_card['expiration_month'],
+             credit_card['expiration_year'],
+             credit_card['healthcare'],
+             credit_card['image_url'],
+             credit_card['issuing_bank'],
+             credit_card['last_4'],
+             credit_card['payroll'],
+             credit_card['prepaid'],
+             credit_card['product_id'],
+             credit_card['token'],
+             credit_card['venmo_sdk'],
+             disbursement.disbursement_date,
+             disbursement.funds_held,
+             disbursement.settlement_amount,
+             disbursement.settlement_currency_exchange_rate,
+             disbursement.settlement_currency_iso_code,
+             disbursement.success,
+             transaction.additional_processor_response,
+             transaction.amount,
+             transaction.avs_error_response_code,
+             transaction.avs_postal_code_response_code,
+             transaction.avs_street_address_response_code,
+             transaction.channel,
+             transaction.created_at,
+             transaction.currency_iso_code,
+             transaction.cvv_response_code,
+             transaction.discount_amount,
+             transaction.escrow_status,
+             transaction.gateway_rejection_reason,
+             transaction.id,
+             transaction.master_merchant_account_id,
+             transaction.merchant_account_id,
+             transaction.order_id,
+             transaction.payment_instrument_type,
+             transaction.plan_id,
+             transaction.processor_authorization_code,
+             transaction.processor_response_code,
+             transaction.processor_response_text,
+             transaction.processor_settlement_response_code,
+             transaction.processor_settlement_response_text,
+             transaction.purchase_order_number,
+             transaction.recurring,
+             transaction.refund_id,
+             transaction.refunded_transaction_id,
+             transaction.service_fee_amount,
+             transaction.settlement_batch_id,
+             transaction.shipping_amount,
+             transaction.ships_from_postal_code,
+             transaction.status,
+             transaction.sub_merchant_account_id,
+             transaction.subscription_id,
+             transaction.tax_amount,
+             transaction.tax_exempt,
+             transaction.type,
+             transaction.updated_at,
+             transaction.voice_referral_number,
+        ]
     return transaction_dict
 
 

@@ -56,6 +56,7 @@ def update_redshift(table_name, columns, primary_key, filename):
     staging_table_name = table_name + "_staging"
     column_names = ", ".join(columns)
     columns_to_stage = ", ".join([(column + " = s." + column) for column in columns])
+    print(column_names)
     table_key = table_name + "." + primary_key
     staging_table_key = "s." + primary_key
 
