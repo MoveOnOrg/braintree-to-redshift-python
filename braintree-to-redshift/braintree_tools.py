@@ -6,6 +6,7 @@
 import sys
 import os
 import boto
+from datetime import date, datetime, timedelta
 from boto.s3.connection import Location
 local_settings_path = os.path.join(os.getcwd(),"settings.py")
 if os.path.exists(local_settings_path):
@@ -30,7 +31,7 @@ def create_transactions_import_file(
     print('create import file called')
     import_file = open(files_dir + filename, 'w')
     print('import file opened')
-    data_dict = make_transactions_dictionary()
+    data_dict = make_transactions_dictionary(date.today(), 1)
     print('data dict created')
     if not data_dict:
         print("Could not retrieve transaction data")
@@ -48,6 +49,8 @@ def upload_to_s3(filename='braintree_import.csv'):
     k = boto.s3.key.Key(bucket)
     k.key = '/' + s3_bucket_dir + '/' + filename
     k.set_contents_from_filename(files_dir + filename)
+    print("s3 destination is")
+    print(k.key)
 
 def update_redshift(table_name, columns, primary_key, filename):
     global rsm
@@ -56,7 +59,6 @@ def update_redshift(table_name, columns, primary_key, filename):
     staging_table_name = table_name + "_staging"
     column_names = ", ".join(columns)
     columns_to_stage = ", ".join([(column + " = s." + column) for column in columns])
-    print(column_names)
     table_key = table_name + "." + primary_key
     staging_table_key = "s." + primary_key
 

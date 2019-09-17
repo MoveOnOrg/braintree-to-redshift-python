@@ -10,17 +10,6 @@ if os.path.exists(local_settings_path):
     import imp
     settings = imp.load_source('settings', local_settings_path)
 
-# def decimal_default(obj):
-#     if isinstance(obj, decimal.Decimal):
-#         return float(obj)
-#     raise TypeError
-#
-#
-# def datetime_default(o):
-#     if isinstance(o, datetime):
-#         return o.__str__()
-
-
 def connect_to_braintree():
     gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key))
     return gateway
@@ -57,13 +46,12 @@ def get_transactions(start_date=date.today(), days=1):
     return collection
 
 
-def make_transactions_dictionary(start_date=date(2019, 6, 25), days=3):
+def make_transactions_dictionary(start_date=date.today(), days=1):
     transactions = get_transactions(start_date, days)
     transaction_dict = {}
     for transaction in transactions.items:
         credit_card = transaction.credit_card
         disbursement = transaction.disbursement_details
-        print(disbursement)
         transaction_dict[transaction.id] = [
             credit_card['bin'],
              credit_card['card_type'],

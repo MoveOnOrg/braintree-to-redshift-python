@@ -7,7 +7,6 @@
 import sys
 import os
 local_settings_path = os.path.join(os.getcwd(),"settings.py")
-print(local_settings_path)
 if os.path.exists(local_settings_path):
     import imp
     settings = imp.load_source('settings', local_settings_path)
@@ -30,7 +29,7 @@ def main(event='', context=''):
     upload_to_s3(transactions['filename'])
     print(
         "uploaded %s to s3 bucket s3://%s/%s"
-        %(files_dir + transactions['filename'], s3_bucket_dir, s3_bucket))
+        %(files_dir + transactions['filename'], s3_bucket, s3_bucket_dir))
     update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
     print("updated redshift table " + transactions['tablename'])
     print("Done!")
