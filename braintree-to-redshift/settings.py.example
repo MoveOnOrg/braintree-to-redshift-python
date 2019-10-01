@@ -77,7 +77,30 @@ transactions['columns'] = [ #these are columns from the redshift table. They do 
 ]
 transactions['primary_key'] = 'id'
 disputes = {}
-data_types = [transactions] #tk disputes
+disputes['import_type'] = 'disputes'
+disputes['filename'] = 'braintree_import_disputes.csv'
+disputes['tablename'] = 'ventures.disputes'
+disputes['columns'] = [ #these are columns from the redshift table. They do not perfectly map to braintree transaction objects.
+    'amount_disputed',
+    'amount_won',
+    'case_number',
+    'currency_iso_code',
+    'id',
+    'kind',
+    'merchant_account_id',
+    'original_dispute_id',
+    'processor_comments',
+    'reason',
+    'reason_code',
+    'reason_description',
+    'received_date',
+    'reference_number',
+    'reply_by_date',
+    'status',
+    'transaction_id',
+]
+disputes['primary_key'] = 'id'
+
 
 # AWS settings
 aws_access_key = ''

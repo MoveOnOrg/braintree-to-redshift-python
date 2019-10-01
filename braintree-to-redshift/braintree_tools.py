@@ -16,7 +16,7 @@ if os.path.exists(local_settings_path):
 from redshift import RedShiftMediator
 
 from braintree_connection import (
-    make_transactions_dictionary, get_disputes)
+    make_disputes_dictionary, make_transactions_dictionary)
 from settings import (
     aws_access_key, aws_secret_key, s3_bucket, s3_bucket_dir, s3_region, files_dir,
     test)
@@ -25,17 +25,25 @@ import csv
 
 rsm = None
 
-def create_transactions_import_file(
+def create_import_file(
         filename='braintree_import.csv',
-        columns=False):
+        columns=False,
+        type='transactions'):
     print('create import file called')
     import_file = open(files_dir + filename, 'w')
     print('import file opened')
-    data_dict = make_transactions_dictionary(date.today(), 1)
-    print('data dict created')
-    if not data_dict:
-        print("Could not retrieve transaction data")
-        return False
+    if type == 'transactions':
+        data_dict = make_transactions_dictionary(date.today(), 1)
+        print('data dict created')
+        if not data_dict:
+            print("Could not retrieve transaction data")
+            return False
+    elif type == 'disputes':
+        data_dict = make_disputes_dictionary(date.today(), 1)
+        print('data dict created')
+        if not data_dict:
+            print("Could not retrieve transaction data")
+            return False
     csv_file = csv.writer(import_file, delimiter="|")
     csv_file.writerow(columns)
     for key, value in data_dict.items():

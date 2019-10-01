@@ -7,8 +7,8 @@ class BraintreeTools(unittest.TestCase):
     def setUp(self):
         self.filename = 'braintree-to-redshift-test.csv'
 
-    def test_create_transactions_import_file(self):
-        import_creator = create_transactions_import_file(filename=self.filename, columns=transactions['columns'])
+    def test_create_import_file(self):
+        import_creator = create_import_file(filename=self.filename, columns=transactions['columns'])
         self.assertTrue(import_creator)
 
     def test_upload_to_s3(self):

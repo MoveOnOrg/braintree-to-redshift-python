@@ -32,8 +32,6 @@ If Python 3 is not your default Python version, you'll need to tell virtualenv w
 
 ### 4. Create settings.py (using settings.py.example as a template).
 
-### 5. Create or copy a parameter dictionary for each data CSV, using examples in settings.py. Add each dictionary to the list of `data_types` in settings.py.
-
 ### 6. Set up Redshift import.
   * If you don't already have one, [create a bucket in S3](http://docs.aws.amazon.com/gettingstarted/latest/swh/getting-started-create-bucket.html) and add its unique name to `s3_bucket` in settings.py.
   * [Create a Redshift database](http://docs.aws.amazon.com/redshift/latest/dg/t_creating_database.html), and get your [AWS IAM credentials](https://aws.amazon.com/iam/). Add database connection info and IAM credentials to settings.py.

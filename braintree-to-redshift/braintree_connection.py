@@ -39,11 +39,44 @@ def log_error(content, logfile):
     error_log.close()
 
 
-def get_transactions(start_date=date.today(), days=1):
+def get_disputes(start_date=date.today(), days=3):
+    gateway = connect_to_braintree()
+    end_date = start_date + timedelta(days=days)
+    collection = gateway.dispute.search(braintree.DisputeSearch.effective_date.between(start_date, end_date))
+    return collection
+
+def get_transactions(start_date=date.today(), days=3):
     gateway = connect_to_braintree()
     end_date = start_date + timedelta(days=days)
     collection = gateway.transaction.search(braintree.TransactionSearch.created_at.between(start_date, end_date))
     return collection
+
+def make_disputes_dictionary(start_date=date.today(), days=1):
+    print('called')
+    result = get_disputes(start_date, days)
+    print(result)
+    dispute_dict = {}
+    for dispute in result.disputes:
+        dispute_dict[dispute.id] = [
+            dispute.amount_disputed,
+            dispute.amount_won,
+            dispute.case_number,
+            dispute.currency_iso_code,
+            dispute.id,
+            dispute.kind,
+            dispute.merchant_account_id,
+            dispute.original_dispute_id,
+            dispute.processor_comments,
+            dispute.reason,
+            dispute.reason_code,
+            dispute.reason_description,
+            dispute.received_date,
+            dispute.reference_number,
+            dispute.reply_by_date,
+            dispute.status,
+            dispute.transaction.id,
+        ]
+    return dispute_dict
 
 
 def make_transactions_dictionary(start_date=date.today(), days=1):
@@ -119,7 +152,3 @@ def make_transactions_dictionary(start_date=date.today(), days=1):
              transaction.voice_referral_number,
         ]
     return transaction_dict
-
-
-def get_disputes():
-    print ('disputes')
