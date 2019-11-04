@@ -17,11 +17,11 @@ from settings import (
     test, disputes, files_dir, s3_bucket, s3_bucket_dir, transactions)
 
 def main(event='', context=''):
-    print()
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
     print('Importing transactions')
     print('creating file')
     created_file = create_import_file(
+        days=4,
         filename=transactions['filename'],
         columns=transactions['columns']
     )
