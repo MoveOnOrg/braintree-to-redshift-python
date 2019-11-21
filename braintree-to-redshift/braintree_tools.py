@@ -35,14 +35,14 @@ def create_import_file(
     print('import file opened')
     if type == 'transactions':
         print('starting transactions dictionary call')
-        data_dict = make_transactions_dictionary(date.today(), days)
+        data_dict = make_transactions_dictionary(date.today())
         print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
             return False
     elif type == 'disputes':
         data_dict = make_disputes_dictionary(date.today(), days)
-        print('data dict created')
+        # print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
             return False

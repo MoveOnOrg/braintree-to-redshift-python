@@ -116,21 +116,24 @@ def get_disputes(end_date=date.today(), days=5):
     collection = gateway.dispute.search(braintree.DisputeSearch.effective_date.between(start_date, end_date))
     return collection
 
-def get_transactions(today=date.today(), days=4):
+def get_disbursed_transactions(today=date.today()):
     gateway = connect_to_braintree()
-    end_date = today + timedelta(days=-1)
-    start_date = end_date + timedelta(days=-days)
+    start_date = today + timedelta(days=-5)
+    end_date = today + timedelta(days=-4)
     print('disbursed transactions date range')
     print(start_date)
     print(end_date)
     collection = gateway.transaction.search(
         braintree.TransactionSearch.disbursement_date.between(start_date, end_date)
     )
+    print("disbursed:")
+    size = sum(1 for _ in collection.items)
+    print(size)
     return collection
 
-def get_new_transactions():
+def get_new_transactions(end_date=date.today()):
     gateway = connect_to_braintree()
-    end_date = date.today() 
+    end_date = end_date
     start_date = end_date + timedelta(days=-1)
     print('new transactions date range')
     print(start_date)
@@ -138,6 +141,9 @@ def get_new_transactions():
     collection = gateway.transaction.search(
         braintree.TransactionSearch.created_at.between(start_date, end_date)
     )
+    print("new:")
+    size = sum(1 for _ in collection.items)
+    print(size)
     return collection
 
 def make_disputes_dictionary(end_date=date.today(), days=5):
@@ -165,11 +171,11 @@ def make_disputes_dictionary(end_date=date.today(), days=5):
         ]
     return dispute_dict
 
-def make_transactions_dictionary(end_date=date.today(), days=5):
+def make_transactions_dictionary(end_date=date.today()):
     transaction_dict = {}
-    disbursed_transactions = get_transactions(end_date, days)
+    disbursed_transactions = get_disbursed_transactions(end_date)
     add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
-    new_transactions = get_new_transactions()
+    new_transactions = get_new_transactions(end_date)
     add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')
