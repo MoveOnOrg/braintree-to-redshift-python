@@ -42,3 +42,6 @@ If Python 3 is not your default Python version, you'll need to tell virtualenv w
   `python braintree_to_redshift.py`
 
   * If you set `test` to `True`, your CSVs will have '_test' appended to the filename and the script will append '_test' to the tablenames - so you must create tables in advance of running the script in test mode for import to work. E.g. `CREATE TABLE ventures.transactions_test`.
+
+  NOTES ABOUT DEPLOYMENT:
+  This project includes settings to deploy to Lambda via Zappa. HOWEVER, it fails if the subnets on AWS are set to anything but an outside-by-NAT network. So check that if it is working locally but not on AWS.

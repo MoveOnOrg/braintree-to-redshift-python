@@ -82,7 +82,10 @@ def add_items_to_transactions_dictionary(dictionary, transactions):
         ]
 def connect_to_braintree():
     print('connect to braintree called')
-    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=200))
+    import ssl; print(ssl.OPENSSL_VERSION)
+    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=900))
+    print('gateway achieved')
+    print(gateway)
     return gateway
 
 def log_error(content, logfile):
@@ -97,10 +100,9 @@ def get_disputes(end_date=date.today(), days=5):
     collection = gateway.dispute.search(braintree.DisputeSearch.effective_date.between(start_date, end_date))
     return collection
 
-def get_disbursed_transactions(now=datetime.now()):
-    gateway = connect_to_braintree()
-    start_time = now + timedelta(days=-5)
-    end_time = start_time + timedelta(hours=6)
+def get_disbursed_transactions(gateway, hours, now=datetime.now()):
+    start_time = now + timedelta(days = -6)
+    end_time = start_time + timedelta(hours = hours)
     print('disbursed transactions datetime range')
     print(start_time)
     print(end_time)
@@ -112,10 +114,9 @@ def get_disbursed_transactions(now=datetime.now()):
     print(size)
     return collection
 
-def get_new_transactions(end_time=datetime.now()):
-    gateway = connect_to_braintree()
+def get_new_transactions(gateway, hours, end_time=datetime.now()):
     end_time = end_time
-    start_time = end_time + timedelta(hours=-6)
+    start_time = end_time + timedelta(hours = -hours)
     print('new transactions date range')
     print(start_time)
     print(end_time)
@@ -127,7 +128,7 @@ def get_new_transactions(end_time=datetime.now()):
     print(size)
     return collection
 
-def make_disputes_dictionary(end_date=date.today(), days=5):
+def make_disputes_dictionary(end_date=date.today(), days=5, hours=6):
     result = get_disputes(end_date, days)
     dispute_dict = {}
     for dispute in result.disputes:
@@ -152,11 +153,12 @@ def make_disputes_dictionary(end_date=date.today(), days=5):
         ]
     return dispute_dict
 
-def make_transactions_dictionary(end_time=datetime.now()):
+def make_transactions_dictionary(end_time=datetime.now(), hours=6):
+    gateway = connect_to_braintree()
     transaction_dict = {}
-    disbursed_transactions = get_disbursed_transactions(end_time)
+    disbursed_transactions = get_disbursed_transactions(gateway, hours, end_time)
     add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
-    new_transactions = get_new_transactions(end_time)
+    new_transactions = get_new_transactions(gateway, hours, end_time)
     add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')

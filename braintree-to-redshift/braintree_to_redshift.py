@@ -23,7 +23,8 @@ def main(event='', context=''):
     created_file = create_import_file(
         days=4,
         filename=transactions['filename'],
-        columns=transactions['columns']
+        columns=transactions['columns'],
+        hours=3
     )
     print("created %s " %(files_dir + transactions['filename']))
     upload_to_s3(transactions['filename'])
@@ -40,7 +41,8 @@ def main(event='', context=''):
     created_file = create_import_file(
         filename=disputes['filename'],
         columns=disputes['columns'],
-        type='disputes'
+        type='disputes',
+        hours=3
     )
     print("created %s " %(files_dir + disputes['filename']))
     upload_to_s3(disputes['filename'])
