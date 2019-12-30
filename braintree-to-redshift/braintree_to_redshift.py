@@ -24,7 +24,7 @@ def main(event='', context=''):
         days=4,
         filename=transactions['filename'],
         columns=transactions['columns'],
-        hours=2
+        hours=1
     )
     print("created %s " %(files_dir + transactions['filename']))
     upload_to_s3(transactions['filename'])
@@ -42,7 +42,7 @@ def main(event='', context=''):
         filename=disputes['filename'],
         columns=disputes['columns'],
         type='disputes',
-        hours=2
+        hours=1
     )
     print("created %s " %(files_dir + disputes['filename']))
     upload_to_s3(disputes['filename'])
