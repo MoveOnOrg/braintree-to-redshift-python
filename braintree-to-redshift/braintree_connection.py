@@ -153,13 +153,15 @@ def make_disputes_dictionary(end_date=date.today(), days=5, hours=6):
         ]
     return dispute_dict
 
-def make_transactions_dictionary(end_time=datetime.now(), hours=6):
+def make_transactions_dictionary(end_time=datetime.now(), hours=6, type='new_transactions'):
     gateway = connect_to_braintree()
     transaction_dict = {}
-    disbursed_transactions = get_disbursed_transactions(gateway, hours, end_time)
-    add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
-    new_transactions = get_new_transactions(gateway, hours, end_time)
-    add_items_to_transactions_dictionary(transaction_dict, new_transactions)
+    if type == 'disbursed':
+        disbursed_transactions = get_disbursed_transactions(gateway, hours, end_time)
+        add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
+    elif type == 'new_transactions':
+        new_transactions = get_new_transactions(gateway, hours, end_time)
+        add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')
     print(len(transaction_dict))

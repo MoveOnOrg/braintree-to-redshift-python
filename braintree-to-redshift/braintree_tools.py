@@ -30,13 +30,12 @@ def create_import_file(
         hours=6,
         filename='braintree_import.csv',
         columns=False,
-        type='transactions'):
-    print('create import file called')
+        type='new_transactions'):
     import_file = open(files_dir + filename, 'w')
     print('import file opened')
-    if type == 'transactions':
+    if type == 'new_transactions' or type == 'disbursed':
         print('starting transactions dictionary call')
-        data_dict = make_transactions_dictionary(end_time = datetime.now(), hours = hours)
+        data_dict = make_transactions_dictionary(end_time = datetime.now(), hours = hours, type = type)
         print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
