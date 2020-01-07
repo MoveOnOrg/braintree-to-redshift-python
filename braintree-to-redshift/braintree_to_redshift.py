@@ -16,11 +16,11 @@ from time import gmtime, strftime
 from settings import (
     test, disputes, files_dir, s3_bucket, s3_bucket_dir, transactions)
 
-def main(event, context):
+def main(event='', context=''):
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
     # 'disputes', 'new_transactions', 'disbursed'
-    transaction_type = 'new_transactions'
-    if transaction_type = 'new_transactions':
+    transaction_type = 'disbursed'
+    if transaction_type == 'new_transactions':
         created_file = create_import_file(
             days=4,
             filename=transactions['filename'],
@@ -39,7 +39,22 @@ def main(event, context):
 
         print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
     elif transaction_type == 'disbursed':
-        print('disbursed')
+        created_file = create_import_file(
+            days=4,
+            filename=transactions['filename'],
+            columns=transactions['columns'],
+            hours=1,
+            type='disbursed'
+        )
+        print("created %s " %(files_dir + transactions['filename']))
+        upload_to_s3(transactions['filename'])
+        print(
+            "uploaded %s to s3 bucket s3://%s/%s"
+            %(files_dir + transactions['filename'], s3_bucket, s3_bucket_dir))
+        update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
+        print("updated redshift table " + transactions['tablename'])
+        print("Done with transactions!")
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
     elif transaction_type == 'disputes':
         print('Importing disputes')
         print('creating file')

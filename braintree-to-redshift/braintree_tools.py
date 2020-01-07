@@ -33,9 +33,11 @@ def create_import_file(
         type='new_transactions'):
     import_file = open(files_dir + filename, 'w')
     print('import file opened')
+    print('number of days')
+    print(days)
     if type == 'new_transactions' or type == 'disbursed':
         print('starting transactions dictionary call')
-        data_dict = make_transactions_dictionary(end_time = datetime.now(), hours = hours, type = type)
+        data_dict = make_transactions_dictionary(end_time = datetime.now(), days =  days, hours = hours, type = type)
         print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")

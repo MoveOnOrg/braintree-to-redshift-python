@@ -100,9 +100,9 @@ def get_disputes(end_date=date.today(), days=5):
     collection = gateway.dispute.search(braintree.DisputeSearch.effective_date.between(start_date, end_date))
     return collection
 
-def get_disbursed_transactions(gateway, hours, now=datetime.now()):
-    start_time = now + timedelta(days = -6)
-    end_time = start_time + timedelta(hours = hours)
+def get_disbursed_transactions(gateway, days, now=datetime.now()):
+    start_time = now + timedelta(days = -days)
+    end_time = start_time + timedelta(days = 1)
     print('disbursed transactions datetime range')
     print(start_time)
     print(end_time)
@@ -153,11 +153,11 @@ def make_disputes_dictionary(end_date=date.today(), days=5, hours=6):
         ]
     return dispute_dict
 
-def make_transactions_dictionary(end_time=datetime.now(), hours=6, type='new_transactions'):
+def make_transactions_dictionary(end_time=datetime.now(), days=6, hours=6, type='new_transactions'):
     gateway = connect_to_braintree()
     transaction_dict = {}
     if type == 'disbursed':
-        disbursed_transactions = get_disbursed_transactions(gateway, hours, end_time)
+        disbursed_transactions = get_disbursed_transactions(gateway, days, end_time)
         add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
     elif type == 'new_transactions':
         new_transactions = get_new_transactions(gateway, hours, end_time)
