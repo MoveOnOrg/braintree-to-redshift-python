@@ -27,6 +27,7 @@ rsm = None
 
 def create_import_file(
         days=5,
+        date=datetime.now(),
         hours=6,
         filename='braintree_import.csv',
         columns=False,
@@ -37,13 +38,13 @@ def create_import_file(
     print(days)
     if type == 'new_transactions' or type == 'disbursed':
         print('starting transactions dictionary call')
-        data_dict = make_transactions_dictionary(end_time = datetime.now(), days =  days, hours = hours, type = type)
+        data_dict = make_transactions_dictionary(end_time = date, days =  days, hours = hours, type = type)
         print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
             return False
     elif type == 'disputes':
-        data_dict = make_disputes_dictionary(end_date = datetime.today(), days = days)
+        data_dict = make_disputes_dictionary(end_date = date, days = days)
         # print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
@@ -53,7 +54,7 @@ def create_import_file(
     for key, value in data_dict.items():
         csv_file.writerow(value)
     import_file.close()
-    return True
+    return import_file
 
 def upload_to_s3(filename='braintree_import.csv'):
     conn = boto.connect_s3(aws_access_key, aws_secret_key)
@@ -64,11 +65,15 @@ def upload_to_s3(filename='braintree_import.csv'):
     print("s3 destination is")
     print(k.key)
 
-def update_redshift(table_name, columns, primary_key, filename):
+def update_redshift():
     global rsm
     if rsm is None:
         rsm = RedShiftMediator(settings)
+    table_name = transactions['tablename']
+    columns = transactions['columns']
+    primary_key = transactions['primary_key']
     staging_table_name = table_name + "_staging"
+    filename = transactions['filename']
     column_names = ", ".join(columns)
     columns_to_stage = ", ".join([(column + " = s." + column) for column in columns])
     table_key = table_name + "." + primary_key
