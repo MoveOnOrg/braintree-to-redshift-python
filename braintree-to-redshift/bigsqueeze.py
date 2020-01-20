@@ -41,6 +41,15 @@ import sys
 import traceback
 import uuid
 
+# local_settings_path = os.path.join(os.getcwd(),"settings.py")
+# if os.path.exists(local_settings_path):
+#     import imp
+#     settings = imp.load_source('settings', local_settings_path)
+#
+# from settings import (
+#     aws_access_key, aws_secret_key, s3_bucket, s3_bucket_dir, s3_region, files_dir,
+#     test)
+# import settings
 import boto3
 from zappa.asynchronous import get_func_task_path, import_and_get_task
 from zappa.asynchronous import task as zappa_async_task
@@ -95,8 +104,9 @@ def distribute_task_csv(csv_file_data, func_to_run,
     TODO: Docs
     """
     func_name = get_func_task_path(func_to_run)
-    import_file = open(csv_file_data)
-    row_chunks = import_file.split(b'\n')
+    # import_file = open(csv_file_data)
+    # row_chunks = import_file.split(b'\n')
+    row_chunks = csv_file_data.split('\n')
     cursor = 0
     row_ranges = []
     # gather start/end bytes for each row

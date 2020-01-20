@@ -51,10 +51,13 @@ def main(event='', context=''):
             hours=1,
             type='disbursed'
         )
-        print("created %s " %(files_dir + transactions['filename']))
+        print("created file received")
+        print(datetime.now())
+        # print("created %s " %(files_dir + transactions['filename']))
         # print(
         #     "uploaded %s to s3 bucket s3://%s/%s"
         #     %(files_dir + transactions['filename'], s3_bucket, s3_bucket_dir))
+        print("calling distribute task csv")
         distribute_task_csv(created_file, update_redshift, s3_bucket, catch=True)
         # update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
         print("updated redshift table " + transactions['tablename'])

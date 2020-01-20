@@ -10,76 +10,79 @@ if os.path.exists(local_settings_path):
     import imp
     settings = imp.load_source('settings', local_settings_path)
 
-def add_items_to_transactions_dictionary(dictionary, transactions):
+def add_items_to_transactions_dictionary(array, transactions):
     for transaction in transactions.items:
         credit_card = transaction.credit_card
         disbursement = transaction.disbursement_details
-        dictionary[transaction.id] = [
-            credit_card['bin'],
-             credit_card['card_type'],
-             credit_card['cardholder_name'],
-             credit_card['commercial'],
-             credit_card['country_of_issuance'],
-             credit_card['customer_location'],
-             credit_card['debit'],
-             credit_card['durbin_regulated'],
-             credit_card['expiration_month'],
-             credit_card['expiration_year'],
-             credit_card['healthcare'],
-             credit_card['image_url'],
-             credit_card['issuing_bank'],
-             credit_card['last_4'],
-             credit_card['payroll'],
-             credit_card['prepaid'],
-             credit_card['product_id'],
-             credit_card['token'],
-             credit_card['venmo_sdk'],
-             disbursement.disbursement_date,
-             disbursement.funds_held,
-             disbursement.settlement_amount,
-             disbursement.settlement_currency_exchange_rate,
-             disbursement.settlement_currency_iso_code,
-             disbursement.success,
-             transaction.additional_processor_response,
-             transaction.amount,
-             transaction.avs_error_response_code,
-             transaction.avs_postal_code_response_code,
-             transaction.avs_street_address_response_code,
-             transaction.channel,
-             transaction.created_at,
-             transaction.currency_iso_code,
-             transaction.cvv_response_code,
-             transaction.discount_amount,
-             transaction.escrow_status,
-             transaction.gateway_rejection_reason,
-             transaction.id,
-             transaction.master_merchant_account_id,
-             transaction.merchant_account_id,
-             transaction.order_id,
-             transaction.payment_instrument_type,
-             transaction.plan_id,
-             transaction.processor_authorization_code,
-             transaction.processor_response_code,
-             transaction.processor_response_text,
-             transaction.processor_settlement_response_code,
-             transaction.processor_settlement_response_text,
-             transaction.purchase_order_number,
-             transaction.recurring,
-             transaction.refund_id,
-             transaction.refunded_transaction_id,
-             transaction.service_fee_amount,
-             transaction.settlement_batch_id,
-             transaction.shipping_amount,
-             transaction.ships_from_postal_code,
-             transaction.status,
-             transaction.sub_merchant_account_id,
-             transaction.subscription_id,
-             transaction.tax_amount,
-             transaction.tax_exempt,
-             transaction.type,
-             transaction.updated_at,
-             transaction.voice_referral_number,
-        ]
+        line_of_csv = f"{credit_card['bin']}|{credit_card['card_type']}|{credit_card['cardholder_name']}|{credit_card['commercial']}|{credit_card['country_of_issuance']}|{credit_card['customer_location']}|{credit_card['debit']}| {credit_card['durbin_regulated']}|{credit_card['expiration_month']}|{credit_card['expiration_year']}|{credit_card['healthcare']}|{credit_card['image_url']}|{credit_card['issuing_bank']}|{credit_card['last_4']}|{credit_card['payroll']}|{credit_card['prepaid']}|{credit_card['product_id']}|{credit_card['token']}|{credit_card['venmo_sdk']}|{disbursement.disbursement_date}|{disbursement.funds_held}|{disbursement.settlement_amount}|{disbursement.settlement_currency_exchange_rate}|{disbursement.settlement_currency_iso_code}|{disbursement.success}|{transaction.additional_processor_response}|{transaction.amount}|{transaction.avs_error_response_code}|{transaction.avs_postal_code_response_code}|{transaction.avs_street_address_response_code}|{transaction.channel}|{transaction.created_at}|{transaction.currency_iso_code}|{transaction.cvv_response_code}|{transaction.discount_amount}|{transaction.escrow_status}|{transaction.gateway_rejection_reason}|{transaction.id}|{transaction.master_merchant_account_id}|{transaction.merchant_account_id}|{transaction.order_id}|{transaction.payment_instrument_type}|{transaction.plan_id}|{transaction.processor_authorization_code}|{transaction.processor_response_code}|{transaction.processor_response_text}|{transaction.processor_settlement_response_code}|{transaction.processor_settlement_response_text}|{transaction.purchase_order_number}|{transaction.recurring}|{transaction.refund_id}|{transaction.refunded_transaction_id}|{transaction.service_fee_amount}|{transaction.settlement_batch_id}|{transaction.shipping_amount}|{transaction.ships_from_postal_code}|{transaction.status}|{transaction.sub_merchant_account_id}|{transaction.subscription_id}|{transaction.tax_amount}|{transaction.tax_exempt}|{transaction.type}|{transaction.updated_at}|{transaction.voice_referral_number}"
+        # line_of_csv.append('"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|"%s"|' % (credit_card['bin'], credit_card['card_type'], credit_card['cardholder_name'], credit_card['commercial'], credit_card['country_of_issuance'], credit_card['customer_location'], credit_card['debit'], credit_card['durbin_regulated'], credit_card['expiration_month'], credit_card['expiration_year'], credit_card['healthcare'], credit_card['image_url'], credit_card['issuing_bank'], credit_card['last_4'], credit_card['payroll'], credit_card['prepaid'], credit_card['product_id'], credit_card['token'], credit_card['venmo_sdk'], disbursement.disbursement_date, disbursement.funds_held, disbursement.settlement_amount, disbursement.settlement_currency_exchange_rate, disbursement.settlement_currency_iso_code, disbursement.success, transaction.additional_processor_response, transaction.amount, transaction.avs_error_response_code, transaction.avs_postal_code_response_code, transaction.avs_street_address_response_code, transaction.channel, transaction.created_at, transaction.currency_iso_code, transaction.cvv_response_code, transaction.discount_amount, transaction.escrow_status, transaction.gateway_rejection_reason, transaction.id, transaction.master_merchant_account_id, transaction.merchant_account_id, transaction.order_id, transaction.payment_instrument_type, transaction.plan_id, transaction.processor_authorization_code, transaction.processor_response_code, transaction.processor_response_text, transaction.processor_settlement_response_code, transaction.processor_settlement_response_text, transaction.purchase_order_number, transaction.recurring, transaction.refund_id, transaction.refunded_transaction_id, transaction.service_fee_amount, transaction.settlement_batch_id, transaction.shipping_amount, transaction.ships_from_postal_code, transaction.status, transaction.sub_merchant_account_id, transaction.subscription_id, transaction.tax_amount, transaction.tax_exempt, transaction.type, transaction.updated_at, transaction.voice_referral_number))
+        array.append(line_of_csv)
+        # dictionary[transaction.id] = [
+        #      credit_card['bin'],
+        #      credit_card['card_type'],
+        #      credit_card['cardholder_name'],
+        #      credit_card['commercial'],
+        #      credit_card['country_of_issuance'],
+        #      credit_card['customer_location'],
+        #      credit_card['debit'],
+        #      credit_card['durbin_regulated'],
+        #      credit_card['expiration_month'],
+        #      credit_card['expiration_year'],
+        #      credit_card['healthcare'],
+        #      credit_card['image_url'],
+        #      credit_card['issuing_bank'],
+        #      credit_card['last_4'],
+        #      credit_card['payroll'],
+        #      credit_card['prepaid'],
+        #      credit_card['product_id'],
+        #      credit_card['token'],
+        #      credit_card['venmo_sdk'],
+        #      disbursement.disbursement_date,
+        #      disbursement.funds_held,
+        #      disbursement.settlement_amount,
+        #      disbursement.settlement_currency_exchange_rate,
+        #      disbursement.settlement_currency_iso_code,
+        #      disbursement.success,
+        #      transaction.additional_processor_response,
+        #      transaction.amount,
+        #      transaction.avs_error_response_code,
+        #      transaction.avs_postal_code_response_code,
+        #      transaction.avs_street_address_response_code,
+        #      transaction.channel,
+        #      transaction.created_at,
+        #      transaction.currency_iso_code,
+        #      transaction.cvv_response_code,
+        #      transaction.discount_amount,
+        #      transaction.escrow_status,
+        #      transaction.gateway_rejection_reason,
+        #      transaction.id,
+        #      transaction.master_merchant_account_id,
+        #      transaction.merchant_account_id,
+        #      transaction.order_id,
+        #      transaction.payment_instrument_type,
+        #      transaction.plan_id,
+        #      transaction.processor_authorization_code,
+        #      transaction.processor_response_code,
+        #      transaction.processor_response_text,
+        #      transaction.processor_settlement_response_code,
+        #      transaction.processor_settlement_response_text,
+        #      transaction.purchase_order_number,
+        #      transaction.recurring,
+        #      transaction.refund_id,
+        #      transaction.refunded_transaction_id,
+        #      transaction.service_fee_amount,
+        #      transaction.settlement_batch_id,
+        #      transaction.shipping_amount,
+        #      transaction.ships_from_postal_code,
+        #      transaction.status,
+        #      transaction.sub_merchant_account_id,
+        #      transaction.subscription_id,
+        #      transaction.tax_amount,
+        #      transaction.tax_exempt,
+        #      transaction.type,
+        #      transaction.updated_at,
+        #      transaction.voice_referral_number,
+        # ]
 def connect_to_braintree():
     print('connect to braintree called')
     import ssl; print(ssl.OPENSSL_VERSION)
@@ -109,9 +112,9 @@ def get_disbursed_transactions(gateway, days, now=datetime.now()):
     collection = gateway.transaction.search(
         braintree.TransactionSearch.disbursement_date.between(start_time, end_time)
     )
-    print("disbursed:")
-    size = sum(1 for _ in collection.items)
-    print(size)
+    # print("disbursed:")
+    # size = sum(1 for _ in collection.items)
+    # print(size)
     return collection
 
 def get_new_transactions(gateway, hours, end_time=datetime.now()):
@@ -155,14 +158,20 @@ def make_disputes_dictionary(end_date=date.today(), days=5, hours=6):
 
 def make_transactions_dictionary(end_time=datetime.now(), days=6, hours=6, type='new_transactions'):
     gateway = connect_to_braintree()
-    transaction_dict = {}
+    print("connected to braintree")
+    print(datetime.now())
+    transaction_array = []
     if type == 'disbursed':
         disbursed_transactions = get_disbursed_transactions(gateway, days, end_time)
-        add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
+        print("got disbursed transactions")
+        print(datetime.now())
+        add_items_to_transactions_dictionary(transaction_array, disbursed_transactions)
     elif type == 'new_transactions':
         new_transactions = get_new_transactions(gateway, hours, end_time)
         add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')
-    print(len(transaction_dict))
-    return transaction_dict
+    print(len(transaction_array))
+    joiner = '\n'
+    transactions_string = joiner.join(transaction_array)
+    return transactions_string

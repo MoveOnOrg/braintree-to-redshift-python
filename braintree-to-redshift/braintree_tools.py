@@ -32,8 +32,8 @@ def create_import_file(
         filename='braintree_import.csv',
         columns=False,
         type='new_transactions'):
-    import_file = open(files_dir + filename, 'w')
-    print('import file opened')
+    # import_file = open(files_dir + filename, 'w')
+    # print('import file opened')
     print('number of days')
     print(days)
     if type == 'new_transactions' or type == 'disbursed':
@@ -49,12 +49,13 @@ def create_import_file(
         if not data_dict:
             print("Could not retrieve transaction data")
             return False
-    csv_file = csv.writer(import_file, delimiter="|")
-    csv_file.writerow(columns)
-    for key, value in data_dict.items():
-        csv_file.writerow(value)
-    import_file.close()
-    return import_file
+    return data_dict
+    # csv_file = csv.writer(import_file, delimiter="|")
+    # csv_file.writerow(columns)
+    # for key, value in data_dict.items():
+    #     csv_file.writerow(value)
+    # import_file.close()
+    # return import_file
 
 def upload_to_s3(filename='braintree_import.csv'):
     conn = boto.connect_s3(aws_access_key, aws_secret_key)
@@ -65,7 +66,7 @@ def upload_to_s3(filename='braintree_import.csv'):
     print("s3 destination is")
     print(k.key)
 
-def update_redshift():
+def update_redshift(lines, errors, header, context):
     global rsm
     if rsm is None:
         rsm = RedShiftMediator(settings)
@@ -84,7 +85,7 @@ def update_redshift():
 
     -- Load data into the staging table
     COPY %s (%s)
-    FROM 's3://%s/%s/%s'
+    FROM %s
     CREDENTIALS 'aws_access_key_id=%s;aws_secret_access_key=%s'
     FILLRECORD
     delimiter '|'
@@ -108,7 +109,7 @@ def update_redshift():
     -- End transaction
     END;"""%(
         staging_table_name, table_name, staging_table_name, column_names,
-        s3_bucket, s3_bucket_dir, filename, aws_access_key, aws_secret_key,
+        lines, aws_access_key, aws_secret_key,
         table_name, columns_to_stage, staging_table_name, table_key,
         staging_table_key, table_name, staging_table_name, table_name,
         staging_table_key, table_key, table_key, staging_table_name)
