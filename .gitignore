@@ -1,0 +1,13 @@
+/venv
+setup.py
+pyvenv.cfg
+braintree_import.csv
+/lib64
+/lib
+/include
+/bin
+*.pyc
+/share
+braintree-to-redshift/settings.py
+
+
