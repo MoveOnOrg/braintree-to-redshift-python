@@ -18,38 +18,60 @@ from settings import (
 
 def main(event='', context=''):
     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-    print('Importing transactions')
-    print('creating file')
-    created_file = create_import_file(
-        days=4,
-        filename=transactions['filename'],
-        columns=transactions['columns']
-    )
-    print("created %s " %(files_dir + transactions['filename']))
-    upload_to_s3(transactions['filename'])
-    print(
-        "uploaded %s to s3 bucket s3://%s/%s"
-        %(files_dir + transactions['filename'], s3_bucket, s3_bucket_dir))
-    update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
-    print("updated redshift table " + transactions['tablename'])
-    print("Done with transactions!")
+    # 'disputes', 'new_transactions', 'disbursed'
+    transaction_type = 'disbursed'
+    if transaction_type == 'new_transactions':
+        created_file = create_import_file(
+            days=4,
+            filename=transactions['filename'],
+            columns=transactions['columns'],
+            hours=1,
+            type='new_transactions'
+        )
+        print("created %s " %(files_dir + transactions['filename']))
+        upload_to_s3(transactions['filename'])
+        print(
+            "uploaded %s to s3 bucket s3://%s/%s"
+            %(files_dir + transactions['filename'], s3_bucket, s3_bucket_dir))
+        update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
+        print("updated redshift table " + transactions['tablename'])
+        print("Done with transactions!")
 
-    print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-    print('Importing disputes')
-    print('creating file')
-    created_file = create_import_file(
-        filename=disputes['filename'],
-        columns=disputes['columns'],
-        type='disputes'
-    )
-    print("created %s " %(files_dir + disputes['filename']))
-    upload_to_s3(disputes['filename'])
-    print(
-        "uploaded %s to s3 bucket s3://%s/%s"
-        %(files_dir + disputes['filename'], s3_bucket, s3_bucket_dir))
-    update_redshift(disputes['tablename'], disputes['columns'], disputes['primary_key'], disputes['filename'])
-    print("updated redshift table " + disputes['tablename'])
-    print("Done with disputes!")
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+    elif transaction_type == 'disbursed':
+        created_file = create_import_file(
+            days=4,
+            filename=transactions['filename'],
+            columns=transactions['columns'],
+            hours=1,
+            type='disbursed'
+        )
+        print("created %s " %(files_dir + transactions['filename']))
+        upload_to_s3(transactions['filename'])
+        print(
+            "uploaded %s to s3 bucket s3://%s/%s"
+            %(files_dir + transactions['filename'], s3_bucket, s3_bucket_dir))
+        update_redshift(transactions['tablename'], transactions['columns'], transactions['primary_key'], transactions['filename'])
+        print("updated redshift table " + transactions['tablename'])
+        print("Done with transactions!")
+        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+    elif transaction_type == 'disputes':
+        print('Importing disputes')
+        print('creating file')
+        created_file = create_import_file(
+            filename=disputes['filename'],
+            columns=disputes['columns'],
+            type='disputes',
+            hours=1
+        )
+        print("created %s " %(files_dir + disputes['filename']))
+        upload_to_s3(disputes['filename'])
+        print(
+            "uploaded %s to s3 bucket s3://%s/%s"
+            %(files_dir + disputes['filename'], s3_bucket, s3_bucket_dir))
+        update_redshift(disputes['tablename'], disputes['columns'], disputes['primary_key'], disputes['filename'])
+        print("updated redshift table " + disputes['tablename'])
+        print("Done with disputes!")
 
 if __name__=='__main__':
    main()

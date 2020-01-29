@@ -27,21 +27,23 @@ rsm = None
 
 def create_import_file(
         days=5,
+        hours=6,
         filename='braintree_import.csv',
         columns=False,
-        type='transactions'):
-    print('create import file called')
+        type='new_transactions'):
     import_file = open(files_dir + filename, 'w')
     print('import file opened')
-    if type == 'transactions':
+    print('number of days')
+    print(days)
+    if type == 'new_transactions' or type == 'disbursed':
         print('starting transactions dictionary call')
-        data_dict = make_transactions_dictionary(date.today())
+        data_dict = make_transactions_dictionary(end_time = datetime.now(), days =  days, hours = hours, type = type)
         print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
             return False
     elif type == 'disputes':
-        data_dict = make_disputes_dictionary(date.today(), days)
+        data_dict = make_disputes_dictionary(end_date = datetime.today(), days = days)
         # print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")

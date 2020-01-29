@@ -2,38 +2,38 @@ import unittest
 from braintree_connection import *
 
 class BraintreeConnection(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         self.gateway = connect_to_braintree()
-        self.end_date = date.today()
-        self.day_diff = 1
-        self.transactions = [{
-                'amount': '12',
-                'nonce': 'fake-valid-nonce'
-            },
-            {
-                'amount': '18',
-                'nonce': 'fake-valid-nonce'
-            }
-        ]
+        self.now = datetime.now()
+        self.new_transactions = get_new_transactions(end_time = self.now)
+        self.disbursed_transactions = get_disbursed_transactions(now = self.now)
+        self.new_transactions_length = sum(1 for _ in self.new_transactions.items)
+        self.disbursed_transactions_length = sum(1 for _ in self.disbursed_transactions.items)
+        self.disputes = get_disputes(self.now, 5)
 
-        self.initial_transactions_count = len(list(get_disbursed_transactions(end_date = self.end_date))
-        self.current_transactions_count = self.initial_transactions_count
+    def test_add_items_to_transactions_dictionary(self):
+        dict = {}
+        transactions_count = sum(1 for _ in self.new_transactions.items)
+        add_items_to_transactions_dictionary(dict, self.new_transactions)
+        self.assertEqual(transactions_count, len(dict))
 
-    def test_create_transaction(self):
-        for transaction in self.transactions:
-            create_transaction(transaction['amount'], transaction['nonce'])
-        self.current_transactions_count = len(list(get_disbursed_transactions(end_date = self.end_date)))
-        self.assertEqual(self.current_transactions_count, self.initial_transactions_count + 2)
+    def test_get_disputes(self):
+        disputes_count = sum(1 for _ in self.disputes.disputes)
+        self.assertGreater(disputes_count, 0)
+
+    def test_get_transactions(self):
+        self.assertGreater(self.new_transactions_length, 0)
+        self.assertGreater(self.disbursed_transactions_length, 0) #may return 0 on weekend
+
+    def test_make_disputes_dictionary(self):
+        dispute_dict = make_disputes_dictionary(end_date=date.today())
+        disputes_count = sum(1 for _ in self.disputes.disputes)
+        self.assertEqual(len(dispute_dict), disputes_count)
 
     def test_make_transactions_dictionary(self):
-        dict = make_transactions_dictionary(end_date = self.end_date, days = self.day_diff)
-        self.assertEqual(len(dict), self.current_transactions_count)
-
-    def test_get_disbursed_transactions(self):
-        transactions = len(list(get_transactions(end_date = self.end_date)))
-        self.assertEqual(transactions, self.current_transactions_count)
-
-
+        dict = make_transactions_dictionary(end_time = self.now)
+        self.assertEqual(len(dict), self.new_transactions_length + self.disbursed_transactions_length)
 
 if __name__ == '__main__':
     unittest.main()

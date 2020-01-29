@@ -82,26 +82,11 @@ def add_items_to_transactions_dictionary(dictionary, transactions):
         ]
 def connect_to_braintree():
     print('connect to braintree called')
-    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=200))
+    import ssl; print(ssl.OPENSSL_VERSION)
+    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=900))
+    print('gateway achieved')
+    print(gateway)
     return gateway
-
-
-def create_transaction(amount, nonce):
-    gateway = connect_to_braintree()
-    result = gateway.transaction.sale({'amount': amount,
-       'payment_method_nonce': nonce,
-       'options': {'submit_for_settlement': True}})
-    if result.is_success:
-        print ('success!: ' + result.transaction.id)
-    elif result.transaction:
-        print ('Error processing transaction:')
-        print ('  code: ' + result.transaction.processor_response_code)
-        print ('  text: ' + result.transaction.processor_response_text)
-    else:
-        for error in result.errors.deep_errors:
-            error_string = 'attribute: %s \tcode: %s \t message: %s' % (error.attribute, error.code, error.message)
-            log_error(error_string, './errors.txt')
-
 
 def log_error(content, logfile):
     error_log = open(logfile, 'a')
@@ -109,44 +94,41 @@ def log_error(content, logfile):
     json.dump(content, error_log, indent=4)
     error_log.close()
 
-
 def get_disputes(end_date=date.today(), days=5):
     gateway = connect_to_braintree()
     start_date = end_date + timedelta(days=-days)
     collection = gateway.dispute.search(braintree.DisputeSearch.effective_date.between(start_date, end_date))
     return collection
 
-def get_disbursed_transactions(today=date.today()):
-    gateway = connect_to_braintree()
-    start_date = today + timedelta(days=-5)
-    end_date = today + timedelta(days=-4)
-    print('disbursed transactions date range')
-    print(start_date)
-    print(end_date)
+def get_disbursed_transactions(gateway, days, now=datetime.now()):
+    start_time = now + timedelta(days = -days)
+    end_time = start_time + timedelta(days = 1)
+    print('disbursed transactions datetime range')
+    print(start_time)
+    print(end_time)
     collection = gateway.transaction.search(
-        braintree.TransactionSearch.disbursement_date.between(start_date, end_date)
+        braintree.TransactionSearch.disbursement_date.between(start_time, end_time)
     )
     print("disbursed:")
     size = sum(1 for _ in collection.items)
     print(size)
     return collection
 
-def get_new_transactions(end_date=date.today()):
-    gateway = connect_to_braintree()
-    end_date = end_date
-    start_date = end_date + timedelta(days=-1)
+def get_new_transactions(gateway, hours, end_time=datetime.now()):
+    end_time = end_time
+    start_time = end_time + timedelta(hours = -hours)
     print('new transactions date range')
-    print(start_date)
-    print(end_date)
+    print(start_time)
+    print(end_time)
     collection = gateway.transaction.search(
-        braintree.TransactionSearch.created_at.between(start_date, end_date)
+        braintree.TransactionSearch.created_at.between(start_time, end_time)
     )
     print("new:")
     size = sum(1 for _ in collection.items)
     print(size)
     return collection
 
-def make_disputes_dictionary(end_date=date.today(), days=5):
+def make_disputes_dictionary(end_date=date.today(), days=5, hours=6):
     result = get_disputes(end_date, days)
     dispute_dict = {}
     for dispute in result.disputes:
@@ -171,12 +153,16 @@ def make_disputes_dictionary(end_date=date.today(), days=5):
         ]
     return dispute_dict
 
-def make_transactions_dictionary(end_date=date.today()):
+def make_transactions_dictionary(end_time=datetime.now(), days=6, hours=6, type='new_transactions'):
+    gateway = connect_to_braintree()
     transaction_dict = {}
-    disbursed_transactions = get_disbursed_transactions(end_date)
-    add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
-    new_transactions = get_new_transactions(end_date)
-    add_items_to_transactions_dictionary(transaction_dict, new_transactions)
+    if type == 'disbursed':
+        disbursed_transactions = get_disbursed_transactions(gateway, days, end_time)
+        add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
+    elif type == 'new_transactions':
+        new_transactions = get_new_transactions(gateway, hours, end_time)
+        add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')
+    print(len(transaction_dict))
     return transaction_dict
