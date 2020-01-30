@@ -52,4 +52,4 @@ def main(event='', context=''):
     print("Done with disputes!")
 
 if __name__=='__main__':
-   main()
+    main()

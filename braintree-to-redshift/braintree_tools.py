@@ -73,37 +73,45 @@ def update_redshift(table_name, columns, primary_key, filename):
     staging_table_key = "s." + primary_key
 
     command = """-- Create a staging table
-    CREATE TABLE %s (LIKE %s);
+    -- Drop the staging table
+    DROP TABLE IF EXISTS %(staging_table_name)s;
+
+    CREATE TABLE %(staging_table_name)s (LIKE %(table_name)s);
 
     -- Load data into the staging table
-    COPY %s (%s)
-    FROM 's3://%s/%s/%s'
-    CREDENTIALS 'aws_access_key_id=%s;aws_secret_access_key=%s'
+    COPY %(staging_table_name)s (%(column_names)s)
+    FROM 's3://%(s3_bucket)s/%(s3_bucket_dir)s/%(filename)s'
+    CREDENTIALS 'aws_access_key_id=%(aws_access_key)s;aws_secret_access_key=%(aws_secret_key)s'
     FILLRECORD
     delimiter '|'
     IGNOREHEADER 1;
 
     -- Update records
-    UPDATE %s
-    SET %s
-    FROM %s s
-    WHERE %s = %s;
+    UPDATE %(table_name)s
+    SET %(columns_to_stage)s
+    FROM %(staging_table_name)s s
+    WHERE %(table_key)s = %(staging_table_key)s;
 
     -- Insert records
-    INSERT INTO %s
-    SELECT s.* FROM %s s LEFT JOIN %s
-    ON %s = %s
-    WHERE %s IS NULL;
-
-    -- Drop the staging table
-    DROP TABLE %s;
+    INSERT INTO %(table_name)s
+    SELECT s.* FROM %(staging_table_name)s s LEFT JOIN %(table_name)s
+    ON %(staging_table_key)s = %(table_key)s
+    WHERE %(table_key)s IS NULL;
 
     -- End transaction
-    END;"""%(
-        staging_table_name, table_name, staging_table_name, column_names,
-        s3_bucket, s3_bucket_dir, filename, aws_access_key, aws_secret_key,
-        table_name, columns_to_stage, staging_table_name, table_key,
-        staging_table_key, table_name, staging_table_name, table_name,
-        staging_table_key, table_key, table_key, staging_table_name)
-
+    END;""" % {
+        'staging_table_name': staging_table_name,
+        'table_name': table_name,
+        'staging_table_key': staging_table_key,
+        'table_key': table_key,
+        'column_names': column_names,
+        'columns_to_stage': columns_to_stage,
+        's3_bucket': s3_bucket,
+        's3_bucket_dir': s3_bucket_dir,
+        'filename': filename,
+        'aws_access_key': aws_access_key,
+        'aws_secret_key': aws_secret_key,
+    }
+    if getattr(settings, 'DEBUG', False):
+        print(command)
     rsm.db_query(command)

@@ -11,11 +11,11 @@ if os.path.exists(local_settings_path):
     settings = imp.load_source('settings', local_settings_path)
 
 def add_items_to_transactions_dictionary(dictionary, transactions):
-    for transaction in transactions.items:
+    for transaction in transactions:
         credit_card = transaction.credit_card
         disbursement = transaction.disbursement_details
         dictionary[transaction.id] = [
-            credit_card['bin'],
+             credit_card['bin'],
              credit_card['card_type'],
              credit_card['cardholder_name'],
              credit_card['commercial'],
@@ -127,9 +127,13 @@ def get_disbursed_transactions(today=date.today()):
         braintree.TransactionSearch.disbursement_date.between(start_date, end_date)
     )
     print("disbursed:")
-    size = sum(1 for _ in collection.items)
-    print(size)
-    return collection
+
+    # each iteration is a network request; default is batching with 50 and is SLOW
+    collection._ResourceCollection__page_size = 1000
+    transactions = list(collection.items)  # flatten to local data
+    size = len(transactions)
+    print('disbursed count', size)
+    return transactions
 
 def get_new_transactions(end_date=date.today()):
     gateway = connect_to_braintree()
@@ -142,9 +146,14 @@ def get_new_transactions(end_date=date.today()):
         braintree.TransactionSearch.created_at.between(start_date, end_date)
     )
     print("new:")
-    size = sum(1 for _ in collection.items)
-    print(size)
-    return collection
+    # each iteration is a network request; default is batching with 50 and is SLOW
+    # however making this 1000 yields 'connection timed out' errors
+    # -- probably because the query is trying to load too much data
+    collection._ResourceCollection__page_size = 300
+    transactions = list(collection.items)  # flatten to local data
+    size = len(transactions)
+    print('transaction count', size)
+    return transactions
 
 def make_disputes_dictionary(end_date=date.today(), days=5):
     result = get_disputes(end_date, days)
