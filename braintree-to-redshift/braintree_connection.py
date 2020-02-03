@@ -119,7 +119,7 @@ def get_disputes(end_date=date.today(), days=5):
 def get_disbursed_transactions(today=date.today()):
     gateway = connect_to_braintree()
     start_date = today + timedelta(days=-5)
-    end_date = today + timedelta(days=-4)
+    end_date = today + timedelta(days=-1)
     print('disbursed transactions date range')
     print(start_date)
     print(end_date)
@@ -129,10 +129,12 @@ def get_disbursed_transactions(today=date.today()):
     print("disbursed:")
 
     # each iteration is a network request; default is batching with 50 and is SLOW
-    collection._ResourceCollection__page_size = 1000
+    #collection._ResourceCollection__page_size = 1000
+    print(' search result count', len(collection._ResourceCollection__ids))
+    #import pdb; pdb.set_trace()
     transactions = list(collection.items)  # flatten to local data
     size = len(transactions)
-    print('disbursed count', size)
+    print(' disbursed count', size)
     return transactions
 
 def get_new_transactions(end_date=date.today()):
@@ -145,14 +147,15 @@ def get_new_transactions(end_date=date.today()):
     collection = gateway.transaction.search(
         braintree.TransactionSearch.created_at.between(start_date, end_date)
     )
-    print("new:")
+    print("new transactions:")
     # each iteration is a network request; default is batching with 50 and is SLOW
     # however making this 1000 yields 'connection timed out' errors
     # -- probably because the query is trying to load too much data
-    collection._ResourceCollection__page_size = 300
+    #collection._ResourceCollection__page_size = 300
+    print(' search result count', len(collection._ResourceCollection__ids))
     transactions = list(collection.items)  # flatten to local data
     size = len(transactions)
-    print('transaction count', size)
+    print(' transaction count', size)
     return transactions
 
 def make_disputes_dictionary(end_date=date.today(), days=5):
@@ -184,8 +187,8 @@ def make_transactions_dictionary(end_date=date.today()):
     transaction_dict = {}
     disbursed_transactions = get_disbursed_transactions(end_date)
     add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
-    new_transactions = get_new_transactions(end_date)
-    add_items_to_transactions_dictionary(transaction_dict, new_transactions)
+    #new_transactions = get_new_transactions(end_date)
+    #add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')
     return transaction_dict
