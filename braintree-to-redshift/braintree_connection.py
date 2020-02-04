@@ -187,8 +187,8 @@ def make_transactions_dictionary(end_date=date.today()):
     transaction_dict = {}
     disbursed_transactions = get_disbursed_transactions(end_date)
     add_items_to_transactions_dictionary(transaction_dict, disbursed_transactions)
-    #new_transactions = get_new_transactions(end_date)
-    #add_items_to_transactions_dictionary(transaction_dict, new_transactions)
+    new_transactions = get_new_transactions(end_date)
+    add_items_to_transactions_dictionary(transaction_dict, new_transactions)
     print('returned from get transactions')
     print('transaction dictionary done')
     return transaction_dict
