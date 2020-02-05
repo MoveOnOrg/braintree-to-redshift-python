@@ -4,6 +4,7 @@
     download, format, upload and import data for each data type.
 """
 
+import datetime
 import sys
 import os
 local_settings_path = os.path.join(os.getcwd(),"settings.py")
@@ -52,4 +53,4 @@ def main(event='', context=''):
     print("Done with disputes!")
 
 if __name__=='__main__':
-   main()
+    main()
