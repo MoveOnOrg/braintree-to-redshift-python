@@ -37,7 +37,7 @@ def create_import_file(
     print('import file opened')
     if type == 'transactions':
         print('starting transactions dictionary call')
-        data_dict = make_transactions_dictionary(date(2020, 2, 4))
+        data_dict = make_transactions_dictionary(date(2020, 2, 7))
         print('data dict created')
         if not data_dict:
             print("Could not retrieve transaction data")
