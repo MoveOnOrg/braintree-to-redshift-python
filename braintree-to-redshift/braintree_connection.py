@@ -118,8 +118,8 @@ def get_disputes(end_date=date.today(), days=5):
 
 def get_disbursed_transactions(today=date.today()):
     gateway = connect_to_braintree()
-    start_date = today + timedelta(days=-5)
-    end_date = today + timedelta(days=-4)
+    start_date = today + timedelta(days=-2)
+    end_date = today + timedelta(days=-1)
     print('disbursed transactions date range')
     print(start_date)
     print(end_date)
