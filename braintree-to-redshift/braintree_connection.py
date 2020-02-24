@@ -82,7 +82,8 @@ def add_items_to_transactions_dictionary(dictionary, transactions):
         ]
 def connect_to_braintree():
     print('connect to braintree called')
-    gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=200))
+    # gateway = braintree.BraintreeGateway(braintree.Configuration(environment=braintree.Environment.Production, merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=200))
+    gateway = braintree.BraintreeGateway(braintree.Configuration(environment='sandbox', merchant_id=braintree_merchant_id, public_key=braintree_public_key, private_key=braintree_private_key, timeout=200))
     return gateway
 
 
@@ -93,6 +94,8 @@ def create_transaction(amount, nonce):
        'options': {'submit_for_settlement': True}})
     if result.is_success:
         print ('success!: ' + result.transaction.id)
+        print (result.transaction.created_at)
+        print(result.transaction.created_at)
     elif result.transaction:
         print ('Error processing transaction:')
         print ('  code: ' + result.transaction.processor_response_code)
