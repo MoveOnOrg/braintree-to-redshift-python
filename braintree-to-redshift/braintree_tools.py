@@ -58,19 +58,14 @@ def create_import_file(
     import_file.close()
     return True
 
-def chunks(data, SIZE=10000):
-    it = iter(data)
-    for i in xrange(0, len(data), SIZE):
-        yield {k:data[k] for k in islice(it, SIZE)}
-
 def upload_to_s3(filename='braintree_import.csv'):
     conn = boto.connect_s3(aws_access_key, aws_secret_key)
     bucket = conn.lookup(s3_bucket)
     k = boto.s3.key.Key(bucket)
     k.key = '/' + s3_bucket_dir + '/' + filename
-    k.set_contents_from_filename(files_dir + filename)
     print("s3 destination is")
     print(k.key)
+    return k.set_contents_from_filename(files_dir + filename)
 
 def update_redshift(table_name, columns, primary_key, filename):
     global rsm
@@ -124,4 +119,4 @@ def update_redshift(table_name, columns, primary_key, filename):
     }
     if getattr(settings, 'DEBUG', False):
         print(command)
-    rsm.db_query(command)
+    return rsm.db_query(command)
